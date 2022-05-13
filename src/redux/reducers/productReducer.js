@@ -1,32 +1,32 @@
-import { ActionTypes } from "../constants/action-types";
+import { ActionTypes } from '../constants/action-types'
 const intialState = {
-  products: {
-      id:1,
-      productName:"pixel phone",
-      price:399,
-      category:"phones"
-  },
-};
-
-
-
+  products: [],
+}
 export const productReducer = (state = intialState, { type, payload }) => {
+  console.log('setproduct reducer state', state)
+  // const updatedState=state.products.splice(payload,1)
   switch (type) {
     case ActionTypes.SET_PRODUCTS:
-      return { ...state, products: payload };
+      console.log(state.products)
+      return { ...state, products: [...state.products, payload] }
+    case ActionTypes.REMOVE_PRODUCT:
+      return { ...state.products, products: state.products.filter((item, index) => index !== payload) }
     default:
-      return state;
+      return state
   }
-};
+}
 
-export const selectedProductsReducer = (state = {}, { type, payload }) => {
-  console.log(type);
-  switch (type) {
-    case ActionTypes.SELECTED_PRODUCT:
-      return { ...state, ...payload };
-    case ActionTypes.REMOVE_SELECTED_PRODUCT:
-      return {};
-    default:
-      return state;
-  }
-};
+// export const removeProductReducer = ( state, { type, payload },) => {
+//   console.log('payload is', payload)
+//   console.log('state is', state)
+//   switch (type) {
+//     case ActionTypes.REMOVE_PRODUCT:
+//       return {
+//         ...state,
+//         products: [state.products.filter((item) => item.id !== payload)],
+//       }
+
+//     default:
+//       return state
+//   }
+// }

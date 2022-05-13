@@ -1,47 +1,19 @@
-import React from 'react'
-import { useRef, useState, useEffect } from 'react'
-import { Stack, HStack, VStack } from '@chakra-ui/react'
-import { Textarea } from '@chakra-ui/react'
+import { useRef, useState } from 'react'
+import { Divider } from '@chakra-ui/react'
+import { Textarea, Text } from '@chakra-ui/react'
 import { Image } from '@chakra-ui/react'
-import {
-  Table,
-  Th,
-  Tr,
-  Tfoot,
-  Td,
-  Tbody,
-  Thead,
-  TableCaption,
-  Center,
-} from '@chakra-ui/react'
-import {
-  Button,
-  Flex,
-  SimpleGrid,
-  FormLabel,
-  Input,
-  FormControl,
-} from '@chakra-ui/react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { Table, Th, Tr, Td, Tbody, Thead } from '@chakra-ui/react'
+import { Button, Flex, FormLabel, Input, FormControl } from '@chakra-ui/react'
 import Header from './Header'
 function ManageProducts() {
-  const [products, setProducts] = useState([
-    {
-      productName: 'phone',
-      price: 259,
-      description: 'realme 8 model',
-    },
-    {
-      productName: 'spectacles',
-      price: 199,
-      description: 'rayban company',
-    },
-  ])
+  const products = useSelector((state) => state.products.products)
   const productNameRef = useRef()
   const PriceRef = useRef()
   const productDescriptionRef = useRef()
-  const [productName, setproductName] = useState('')
-  const [price, setPrice] = useState('')
-  const [productDescription, setProductDescription] = useState('')
+  const dispatch = useDispatch()
+  const [baseImage, setBaseImage] = useState('')
 
   const handleAddProduct = (e) => {
     e.preventDefault()
@@ -50,86 +22,150 @@ function ManageProducts() {
       return
     }
 
-    setProducts((prevState) => {
-      console.log(productNameRef.current.value)
-      return [
-        ...prevState,
-        {
-          productName: productNameRef.current.value,
-          price: PriceRef.current.value,
-          description: productDescriptionRef.current.value,
-        },
-      ]
+    dispatch({
+      type: 'SET_PRODUCTS',
+      payload: {
+        productName: productNameRef.current.value,
+        price: PriceRef.current.value,
+        description: productDescriptionRef.current.value,
+        image: baseImage,
+      },
     })
 
-    console.log(products)
+    PriceRef.current.value = ''
+    productNameRef.current.value = ''
+    productDescriptionRef.current.value = ''
+  }
+  // const handleRemove = (idx) => {
+  //   const items = products
+  //   if (items.length > 0) {
+  //     const lastIndex = items.length - 1
+  //     setProducts(items.filter((item, index) => index !== lastIndex))
+  //   }
+  //   console.log('index', idx)
+  // }
+  const handleRemove = (idx) => {
+    console.log('index', idx)
+    dispatch({
+      type: 'REMOVE_PRODUCT',
+      payload: idx,
+    })
+  }
+  const uploadImage = async (e) => {
+    const file = e.target.files[0]
+    const base64 = await convertBase64(file)
+    setBaseImage(base64)
+  }
+
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      }
+
+      fileReader.onerror = (error) => {
+        reject(error)
+      }
+    })
   }
 
   return (
-    <div>
-      <Header />
-
-      <Flex justifyContent={'center'}>
+    <Flex flexDir={'column'}>
+      <Header value={true} />
+      <Divider />
+      <Flex my="32px">
         <Flex>
           <form onSubmit={handleAddProduct}>
-            <VStack spacing={4} align="stretch">
-              <HStack spacing="24px">
+            <Flex spacing={4} align="stretch" flexDirection={'column'}>
+              <Flex flexDirection={{ base: 'column', md: 'row', lg: 'row' }}>
                 <FormControl>
                   <FormLabel>Product Name</FormLabel>
                   <Input
                     placeholder="Enter Product Name"
                     type="text"
-                    mb="20px"
                     ref={productNameRef}
-                    // value={productName}
+                    width="md"
+                    borderRadius={'none'}
+                    my="8px"
+                    mr="32px"
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Price:</FormLabel>
+                  <FormLabel>Price</FormLabel>
                   <Input
                     placeholder="Price"
                     type="text"
-                    mb="20px"
+                    width="md"
                     ref={PriceRef}
+                    borderRadius={'none'}
+                    my="8px"
                   />
                 </FormControl>
-              </HStack>
+              </Flex>
 
-              <HStack spacing="24px">
-                <FormControl>
+              <Flex
+                spacing="64px"
+                flexDirection={{ base: 'column', md: 'row', lg: 'row' }}
+              >
+                <FormControl my="8px">
                   <FormLabel>Product Description</FormLabel>
                   <Textarea
                     placeholder="Enter Description"
                     ref={productDescriptionRef}
+                    width="md"
+                    borderRadius={'none'}
+                    my="8px"
+                    mr="32px"
                   />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>Product Image</FormLabel>
+                <FormControl my="8px">
+                  <FormLabel>
+                    Product Image{' '}
+                    <Text color="gray" display={'inline'} fontSize="sm">
+                      (optional)
+                    </Text>
+                  </FormLabel>
                   {/* <Input placeholder="Title" type="text" mb="20px" /> */}
 
                   <input
                     type="file"
-                    placeholder="Choose file"
-                    id="upload-button"
-                    mb="20px"
+                    onChange={(e) => {
+                      uploadImage(e)
+                    }}
+                    my="8px"
                   />
 
                   {/* <button onClick={handleUpload}>Upload</button> */}
                 </FormControl>
-              </HStack>
-              <Button type="submit" colorScheme="blue" mr={3} marginTop="20px">
+              </Flex>
+              <Button
+                type="submit"
+                color={'white'}
+                bg="#60B3E4"
+                _hover={{ bg: '#60B3E4' }}
+                mr={3}
+                width={'200px'}
+                borderRadius="none"
+              >
                 Add Product
               </Button>
-            </VStack>
+            </Flex>
           </form>
         </Flex>
       </Flex>
-      <Flex justifyContent={'center'}>
-        <Table width={1000} mb="20px">
+      <Flex
+        justifyContent={'center'}
+        display={products.length === 0 ? 'none' : 'inline'}
+      >
+        <Table mb="20px">
           <Thead>
             <Tr>
+              <Th>Image</Th>
               <Th>Name</Th>
-              <Th>Description</Th>
+              <Th>Info</Th>
               <Th>Price</Th>
             </Tr>
           </Thead>
@@ -137,11 +173,24 @@ function ManageProducts() {
             return (
               <Tbody key={idx}>
                 <Tr>
+                  <Td>
+                    <Image
+                      src={item.image}
+                      h={{ base: '10', md: '20', lg: '20' }}
+                      w={{ base: '10', md: '20', lg: '20' }}
+                    />
+                  </Td>
                   <Td>{item.productName}</Td>
-                  <Td>{item.productDescription}</Td>
+                  <Td>{item.description}</Td>
                   <Td>{item.price}</Td>
                   <Td>
-                    <Button>Delete</Button>
+                    <Text
+                      onClick={() => handleRemove(idx)}
+                      color={'#48B1E4'}
+                      cursor={'pointer'}
+                    >
+                      Remove
+                    </Text>
                   </Td>
                 </Tr>
               </Tbody>
@@ -149,7 +198,7 @@ function ManageProducts() {
           })}
         </Table>
       </Flex>
-    </div>
+    </Flex>
   )
 }
 

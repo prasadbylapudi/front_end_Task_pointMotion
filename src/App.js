@@ -1,14 +1,17 @@
-import './App.css'
-import { ChakraProvider } from '@chakra-ui/react'
+import { Container } from '@chakra-ui/react'
 import Header from './containers/Header'
-import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './containers/Home'
 import ManageProducts from './containers/ManageProducts'
 
 function App() {
   return (
-    <div className="App">
+    <Container
+      maxW={'container.lg'}
+      // px={20}
+      h="100vh"
+      align="center"
+    >
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<Header />} />
@@ -16,7 +19,7 @@ function App() {
           <Route path="/ManageProducts" element={<ManageProducts />} />
         </Routes>
       </BrowserRouter>
-    </div>
+    </Container>
   )
 }
 export default App

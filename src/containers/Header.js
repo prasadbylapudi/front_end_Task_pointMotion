@@ -1,19 +1,36 @@
 import React from 'react'
-import Home from './Home'
-import ManageProducts from './ManageProducts'
 import { Link } from 'react-router-dom'
-function Header() {
+import { Flex, Text } from '@chakra-ui/react'
+function Header({ value }) {
   return (
-    <>
-      <ul>
-        <li>
-          <Link to="/Home">Home</Link>
-        </li>
-        <li>
-          <Link to="/ManageProducts">Manage Products</Link>
-        </li>
-      </ul>
-    </>
+    <Flex my="8px">
+      <Flex mx="16px">
+        <Link to="/Home">
+          <Text
+            fontSize={'lg'}
+            textDecoration={!value ? 'underline' : 'none'}
+            textUnderlineOffset={'10px'}
+            textDecorationColor="#60B3E4"
+            textDecorationThickness={'4px'}
+          >
+            Home
+          </Text>
+        </Link>
+      </Flex>
+      <Flex>
+        <Link to="/ManageProducts">
+          <Text
+            fontSize={'lg'}
+            textDecoration={value ? 'underline' : 'none'}
+            textUnderlineOffset={'10px'}
+            textDecorationColor="#60B3E4"
+            textDecorationThickness={'4px'}
+          >
+            Manage Products
+          </Text>
+        </Link>
+      </Flex>
+    </Flex>
   )
 }
 
